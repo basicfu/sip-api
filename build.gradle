@@ -1,0 +1,77 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.0.RELEASE'
+        springCloudVersion = 'Greenwich.M3'
+        kotlinVersion = '1.3.10'
+        fastjsonVersion = '1.2.47'
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+    }
+    repositories {
+        mavenLocal()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven {
+            url "https://repo.rdc.aliyun.com/repository/40986-release-fHIrRh/"
+            credentials {
+                username 'eGCEHS'
+                password 'Ry3GAbzmG5'
+            }
+        }
+    }
+}
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+sourceCompatibility = 1.8
+group = 'com.basicfu.sip'
+version = '0.0.1'
+
+//解决springboot2.+多模块打包依赖问题，打包命令由build改为bootJar
+//需要加以下内容，在多模块下打包编译失败因为不会把依赖模块给打包
+jar {enabled = true}
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web",
+            "com.fasterxml.jackson.module:jackson-module-kotlin",
+            "org.springframework.boot:spring-boot-starter-actuator",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+            "org.jetbrains.kotlin:kotlin-reflect",
+            "com.alibaba:fastjson:${fastjsonVersion}",
+            "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client",
+            "mysql:mysql-connector-java:5.1.45",
+            "com.basicfu.sip:sip-core:0.0.1-1-SNAPSHOT"
+    )
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+repositories {
+    mavenLocal()
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven {
+        url "https://repo.rdc.aliyun.com/repository/40986-release-fHIrRh/"
+        credentials {
+            username 'eGCEHS'
+            password 'Ry3GAbzmG5'
+        }
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
